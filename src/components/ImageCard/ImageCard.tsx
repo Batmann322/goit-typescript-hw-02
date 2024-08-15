@@ -1,15 +1,14 @@
-import { Image } from "../App/App.types";
+import { Image } from "../../articles-api";
 
 interface ImageCardProps {
   image: Image;
+  onClick: () => void;
 }
 
-export default function ImageCard({ image }: ImageCardProps) {
+export default function ImageCard({ image, onClick }: ImageCardProps) {
   return (
-    <div>
-      <img src={image.url} alt={image.alt} />
-      <p>{image.description}</p>
-      <p>{image.author}</p>
+    <div onClick={onClick}>
+      <img src={image.urls.small} alt={image.alt_description} />
     </div>
   );
 }

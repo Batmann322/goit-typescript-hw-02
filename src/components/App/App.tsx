@@ -5,9 +5,8 @@ import Loader from "../Loader/Loader";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
 import ImageModal from "../ImageModal/ImageModal";
-import MyTopic from "../../articles-api";
-import { Image } from "./App.types";
-import css from "../App/App.module.css";
+import { fetchImages, Image } from "../../articles-api";
+import css from "./App.module.css";
 
 export default function App() {
   const [images, setImages] = useState<Image[]>([]);
@@ -18,25 +17,25 @@ export default function App() {
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
 
   useEffect(() => {
-    if (query === "") return;
+    if (!query) return;
 
-    const getImages = async () => {
+    const loadImages = async () => {
       setIsLoading(true);
       try {
-        const newImages = await MyTopic(query, page);
-        setImages((prevImages) => [...prevImages, ...newImages]);
+        const data = await fetchImages({ topic: query, page });
+        setImages((prevImages) => [...prevImages, ...data.results]);
         setError(null);
       } catch (err) {
-        setError("Failed to load images");
+        setError("Oops, something is wrong, try again later");
       } finally {
         setIsLoading(false);
       }
     };
 
-    getImages();
+    loadImages();
   }, [query, page]);
 
-  const handleSearchSubmit = (newQuery: string) => {
+  const handleSearch = (newQuery: string) => {
     setQuery(newQuery);
     setImages([]);
     setPage(1);
@@ -50,24 +49,28 @@ export default function App() {
     setSelectedImage(image);
   };
 
-  const closeModal = () => {
+  const handleModalClose = () => {
     setSelectedImage(null);
   };
 
   return (
     <div className={css.container}>
       <h1 className={css.title}>Images Gallery</h1>
-      <SearchBar onSubmit={handleSearchSubmit} />
-      {isLoading && <Loader />}
+      <SearchBar onSubmit={handleSearch} />
       {error && <ErrorMessage message={error} />}
       {images.length > 0 && (
-        <>
-          <ImageGallery images={images} onImageClick={handleImageClick} />
-          <LoadMoreBtn onClick={handleLoadMore} />
-        </>
+        <ImageGallery images={images} onImageClick={handleImageClick} />
+      )}
+      {isLoading && <Loader />}
+      {images.length > 0 && !isLoading && (
+        <LoadMoreBtn onClick={handleLoadMore} />
       )}
       {selectedImage && (
-        <ImageModal image={selectedImage} onClose={closeModal} />
+        <ImageModal
+          isOpen={!!selectedImage}
+          onRequestClose={handleModalClose}
+          image={selectedImage}
+        />
       )}
     </div>
   );

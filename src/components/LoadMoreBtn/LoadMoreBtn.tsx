@@ -7,8 +7,8 @@ interface LoadMoreBtnProps {
 export default function LoadMoreBtn({ onClick }: LoadMoreBtnProps) {
   return (
     <div className={css.container}>
-      <button className={css.btn} onClick={onClick}>
-        Load more
+      <button type="button" className={css.btn} onClick={onClick}>
+        Load More
       </button>
     </div>
   );

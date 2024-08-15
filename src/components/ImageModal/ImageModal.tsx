@@ -1,26 +1,37 @@
 import css from "../ImageModal/ImageModal.module.css";
-import { Image } from "../App/App.types";
+import Modal from "react-modal";
+import React from "react";
+import { Image } from "../../articles-api";
 
 interface ImageModalProps {
-  image: Image;
-  onClose: () => void;
+  isOpen: boolean;
+  onRequestClose: () => void;
+  image: Image | null;
 }
 
-export default function ImageModal({ image, onClose }: ImageModalProps) {
-  const handleBackgroundClick = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => {
-    if (e.currentTarget === e.target) {
-      onClose();
-    }
-  };
-
+export default function ImageModal({
+  isOpen,
+  onRequestClose,
+  image,
+}: ImageModalProps) {
   return (
-    <div className={css.conteiner} onClick={handleBackgroundClick}>
-      <img src={image.url} alt={image.alt} />
-      <button className={css.closeButton} onClick={onClose}>
-        Close
-      </button>
-    </div>
+    <Modal
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      className={css.modal}
+      overlayClassName={css.overlay}
+    >
+      {image && (
+        <div className={css.modalContent}>
+          <img
+            src={image.urls.regular}
+            alt={image.alt_description}
+            className={css.modalImg}
+          />
+          <p>{image.description}</p>
+          <p>Likes: {image.likes}</p>
+        </div>
+      )}
+    </Modal>
   );
 }

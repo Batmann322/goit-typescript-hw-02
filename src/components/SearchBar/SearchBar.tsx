@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import css from "./SearchBar.module.css";
+import toast, { Toaster } from "react-hot-toast";
 
 interface SearchBarProps {
   onSubmit: (query: string) => void;
@@ -8,74 +9,39 @@ interface SearchBarProps {
 export default function SearchBar({ onSubmit }: SearchBarProps) {
   const [query, setQuery] = useState<string>("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (query.trim() === "") {
-      alert("Please enter a search term.");
+      toast.error("Please enter a search term");
       return;
     }
+
     onSubmit(query);
     setQuery("");
   };
 
   return (
     <header className={css.conatiner}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={css.form}>
         <input
           type="text"
-          value={query}
-          onChange={handleInputChange}
           autoComplete="off"
           autoFocus
-          placeholder="Search images and photos"
+          placeholder="Search images"
+          value={query}
+          onChange={handleInputChange}
           className={css.text}
         />
-        <button className={css.btn} type="submit">
+        <Toaster />
+        <button type="submit" className={css.btn}>
           Search
         </button>
       </form>
     </header>
   );
 }
-
-// export default function SearchBar({ onSubmit }: SearchBarProps) {
-//   const [query, setQuery] = useState<string>("");
-
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setQuery(e.target.value);
-//   };
-
-//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-//     if (query.trim() === "") {
-//       // Використай бібліотеку для сповіщень або стандартний alert
-//       alert("Please enter a search term.");
-//       return;
-//     }
-//     onSubmit(query);
-//     setQuery("");
-//   };
-
-//   return (
-//     <header lassName={css.conatiner}>
-//       <form onSubmit={handleSubmit}>
-//         <input
-//           type="text"
-//           value={query}
-//           onChange={handleInputChange}
-//           autoComplete="off"
-//           autoFocus
-//           placeholder="Search images and photos"
-//           className={css.text}
-//         />
-//         <button className={css.btn} type="submit">
-//           Search
-//         </button>
-//       </form>
-//     </header>
-//   );
-// }
